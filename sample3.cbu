@@ -1,0 +1,11 @@
+void main() {
+가:=10;
+
+switch ( 가 )  
+{
+	case 1: 가:=149; break;
+	case 2: 가:=149; break;
+	case 3: 가:=1149; break;
+	default:	가:=1004; break;
+}
+return 0; }
