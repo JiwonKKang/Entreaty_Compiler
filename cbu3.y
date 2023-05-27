@@ -695,7 +695,6 @@ void prtcode(int token, int val)
 	case FOR:
 		fprintf(fp, "GOTO FLOOP%d\n", for_cnt - inner_f_cnt);
 		fprintf(fp, "LABEL FLABEL%d\n", f_c_cnt - inner_f_cnt);
-		cnt--;
 		break;
 	case TEX:
 		fprintf(fp, ":=\n");
