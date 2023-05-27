@@ -129,7 +129,7 @@ default_stmt	:	DEFAULT COLON stmt_list BREAK	{$$=MakeOPTree(DEFAULT, $3, NULL); 
 case_h		:	case_m COLON stmt_list BREAK	{$$=MakeOPTree(CASEH, $1, $3);}
 		;
 
-case_m		:	NUM CASE case_l 	{$$=MakeOPTree(CASEM, $3, $2);} //todo
+case_m		:	NUM CASE case_l 	{$$=MakeOPTree(CASEM, $3, $1);} //todo
 		;
 
 case_l		:	{$$=MakeNode(CASEL,CASEL);}
