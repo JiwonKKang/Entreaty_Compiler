@@ -144,7 +144,27 @@ extern int yydebug;
      CASEH = 353,
      CASE = 354,
      SWITCH = 355,
-     BREAK = 356
+     BREAK = 356,
+     IS = 357,
+     THEN = 358,
+     WA = 359,
+     THIS = 360,
+     SAVE = 361,
+     RUN = 362,
+     ING = 363,
+     LAST = 364,
+     LOOP = 365,
+     ID6 = 366,
+     ID7 = 367,
+     INC = 368,
+     DEC = 369,
+     NOW = 370,
+     CALL = 371,
+     IN = 372,
+     CONTENT = 373,
+     INIT = 374,
+     FN = 375,
+     VAL = 376
    };
 #endif
 

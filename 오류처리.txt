@@ -1,5 +1,1 @@
 #define _CRT_SECURE_NO_WARNINGS
-
-
-
-$1->token=cond_check($3);

@@ -79,7 +79,7 @@ int 	count_e_nodes(Node*);
 %token  AA SA MA DA ID3 LOOPCON LOOPEND FUNC FSTMT FUNCEND CALLBACK FNAME FOR FORSTLI FORCON FORSTART QM COLON TLVAL TSTMT TERN TEX TCON
 %token  SCANF COMMA PD SCAN UPC AND PRINTF PRINT WLOOPEND FLOOPEND IF_LT IF_GT IF_LE IF_GE IF_EQ IF_NE W_LT W_GT W_LE W_GE W_EQ W_NE
 %token	T_LT T_GT T_LE T_GE T_EQ T_NE F_LT F_GT F_LE F_GE F_EQ F_NE SWAPS SWAPE SWAPM SWAPH ID5 SWAP DEFAULT CASES SWITCHH
-%token	CASEL CASEM CASEH CASE SWITCH BREAK
+%token	CASEL CASEM CASEH CASE SWITCH BREAK IS THEN WA THIS SAVE RUN ING LAST LOOP ID6 ID7 INC DEC NOW CALL IN CONTENT INIT FN VAL
 %right ASSGN
 %left ADD SUB
 %left MUL DIV
@@ -93,38 +93,43 @@ stmt_list	: 	stmt_list stmt 	{$$=MakeListTree($1, $2);}
 		| 	error STMTEND	{ errorcnt++; yyerrok;}
 		;
 
-stmt		: 	ID ASSGN expr STMTEND	{ $1->token = ID2; $$=MakeOPTree(ASSGN, $1, $3);}
-		|	WHILE loop_con LB stmt_list RB	{$$=MakeOPTree(WHILE, $2, $4);}
-		|	t_stmt t_expr STMTEND	{ $$=MakeOPTree(TERN, $1, $2); }	
-		|	ID AA expr STMTEND { $1->token= ID3; $$=MakeOPTree(AA, $1, $3); } 
-		|	ID SA expr STMTEND { $1->token= ID3; $$=MakeOPTree(SA, $1, $3); }
-		|	ID MA expr STMTEND { $1->token= ID3; $$=MakeOPTree(MA, $1, $3); }
-		|	ID DA expr STMTEND { $1->token= ID3; $$=MakeOPTree(DA, $1, $3); }
-		|	FUNC FNAME LB f_stmt_list RB { $$=MakeOPTree(FUNC, $4, NULL); }
+stmt		: 	ID ASSGN expr THIS SAVE STMTEND	{ $1->token = ID2; $$=MakeOPTree(ASSGN, $1, $3);}
+		|	loop_con LB stmt_list RB LOOP STMTEND	{$$=MakeOPTree(WHILE, $1, $3);}
+		|	t_stmt t_expr 	{ $$=MakeOPTree(TERN, $1, $2); }	
+		|	ID AA expr { $1->token= ID3; $$=MakeOPTree(AA, $1, $3); } 
+		|	ID SA expr { $1->token= ID3; $$=MakeOPTree(SA, $1, $3); }
+		|	ID MA expr { $1->token= ID3; $$=MakeOPTree(MA, $1, $3); }
+		|	ID DA expr { $1->token= ID3; $$=MakeOPTree(DA, $1, $3); }
+		|	FUNC FNAME AND CONTENT LB f_stmt_list RB IN FN THIS INIT STMTEND{ $$=MakeOPTree(FUNC, $6, NULL); }
 		|	FOR for_con for_stmt_list	{ $$=MakeOPTree(FOR, $2, $3); }
-		|	SCANF OPEN UPC PD UPC COMMA AND ID CLOSE STMTEND {$8->token=ID2; $$=MakeOPTree(SCAN, $8, NULL);}
-		|	PRINTF OPEN UPC PD UPC COMMA ID CLOSE STMTEND { $$=MakeOPTree(PRINT, $8, NULL); }
-		|	SWAP swap_h	{$$=MakeOPTree(SWAPE, $2, NULL); }	
+		|	ID VAL SCANF {$1->token=ID2; $$=MakeOPTree(SCAN, $1, NULL);}
+		|	ID VAL PRINTF STMTEND { $$=MakeOPTree(PRINT, $1, NULL); }
+		|	swap_h SWAP 	{$$=MakeOPTree(SWAPE, $1, NULL); }	
 		|	if_stmt else_stmt { $$=MakeOPTree(IF_ELSE, $1, $2); }
 		| 	if_stmt
+		|	inc_dec_stmt STMTEND
 		|	call_back
-		|	switch_stmt default_stmt RB	{ $$=MakeOPTree(SWITCH, $1, $2); }
+		|	switch_stmt default_stmt	{ $$=MakeOPTree(SWITCH, $1, $2); }
 		;
 
-switch_stmt	:	SWITCH OPEN ID CLOSE LB case_list  {$3->token=ID4; $$=MakeOPTree(SWITCHH, $3, $6);}
+inc_dec_stmt 	:	ID INC { $1->token=ID6; $$=MakeOPTree(INC, $1, NULL); }
+		|	ID DEC { $1->token=ID7; $$=MakeOPTree(DEC, $1, NULL); }
+		;
+
+switch_stmt	:	SWITCH ID IS case_list {$2->token=ID4; $$=MakeOPTree(SWITCHH, $2, $4);}
 		;
 
 case_list		:	case_list case_h				{$$=MakeListTree($1, $2); }
 		|	case_h 				 	{$$=MakeListTree(NULL, $1); }
 		;
 
-default_stmt	:	DEFAULT COLON stmt_list BREAK STMTEND	{$$=MakeOPTree(DEFAULT, $3, NULL); }
+default_stmt	:	DEFAULT COLON stmt_list BREAK	{$$=MakeOPTree(DEFAULT, $3, NULL); }
 		;
 
-case_h		:	case_m COLON stmt_list BREAK STMTEND	{$$=MakeOPTree(CASEH, $1, $3);}
+case_h		:	case_m COLON stmt_list BREAK	{$$=MakeOPTree(CASEH, $1, $3);}
 		;
 
-case_m		:	CASE NUM case_l 	{$$=MakeOPTree(CASEM, $3, $2);}
+case_m		:	NUM CASE case_l 	{$$=MakeOPTree(CASEM, $3, $2);} //todo
 		;
 
 case_l		:	{$$=MakeNode(CASEL,CASEL);}
@@ -132,27 +137,27 @@ case_l		:	{$$=MakeNode(CASEL,CASEL);}
 
 swap_h		:	swap_m ID 	{$2->token=ID5; $$=MakeOPTree(SWAPH, $1, $2);}
 
-swap_m		:	swap_s ID 	{$2->token=ID5; $$=MakeOPTree(SWAPM, $1, $2);}
+swap_m		:	ID WA swap_s	{$1->token=ID5; $$=MakeOPTree(SWAPM, $3, $1);}
 		;
 
 swap_s		:	{$$=MakeNode(SWAPS,SWAPS);}
 		;
 
-t_stmt		:	t_con t_expr COLON {$$=MakeOPTree(TSTMT, $1, $2); }
+t_stmt		:	t_con t_expr ELSE {$$=MakeOPTree(TSTMT, $1, $2); }
 		;
 
-t_expr		:	t_lval expr { $$=MakeOPTree(TEX, $1, $2); }
+t_expr		:	t_lval expr THIS SAVE STMTEND { $$=MakeOPTree(TEX, $1, $2); }
 		;
 
 t_lval		:	{$$=MakeNode(TLVAL, TLVAL);}
 		;
 
-t_con		:	ID ASSGN OPEN condition CLOSE QM {$4->token=t_cond_check($4->token); $1->token=ID4; $$=MakeOPTree(TCON, $1, $4);}
+t_con		:	ID ASSGN condition {$3->token=t_cond_check($3->token); $1->token=ID4; $$=MakeOPTree(TCON, $1, $3);}
 
-for_stmt_list	:	stmt CLOSE LB stmt_list RB	{$$=MakeOPTree(FORSTLI, $4, $1);}
+for_stmt_list	:	LAST stmt ING LB stmt_list RB LOOP STMTEND	{$$=MakeOPTree(FORSTLI, $5, $2);}
 		;
 
-for_con		:	OPEN for_start condition STMTEND	{$3->token=f_cond_check($3->token); $$=MakeOPTree(FORCON, $2, $3);}
+for_con		:	for_start condition	{$2->token=f_cond_check($2->token); $$=MakeOPTree(FORCON, $1, $2);}
 		;
 for_start		:	stmt floop_end	{$$=MakeOPTree(FORSTART, $1, $2);}
 		;
@@ -165,29 +170,29 @@ f_end		:	{ $$=MakeNode(FUNCEND, FUNCEND); }
 		;
 
 
-call_back		:	FNAME OPEN CLOSE STMTEND {$$=MakeNode(CALLBACK, CALLBACK);}
+call_back		:	FNAME THIS CALL STMTEND {$$=MakeNode(CALLBACK, CALLBACK);}
 		;
 
-loop_con		:	OPEN condition CLOSE wloop_end {$2->token=w_cond_check($2->token); $$=MakeOPTree(LOOPCON, $4, $2); };
+loop_con		:	condition wloop_end {$1->token=w_cond_check($1->token); $$=MakeOPTree(LOOPCON, $2, $1); };
 
 wloop_end	:	{ $$=MakeNode(WLOOPEND, WLOOPEND); };
 
 
-if_stmt		:	IF OPEN condition CLOSE LB stmt_list RB {$3->token=if_cond_check($3->token); $$=MakeOPTree(IF, $3, $6); }
+if_stmt		:	IF condition LB stmt_list RB RUN STMTEND {$2->token=if_cond_check($2->token); $$=MakeOPTree(IF, $2, $4); }
 		;
 
 
-else_stmt		:	ELSE LB stmt_list RB { $$=MakeOPTree(ELSE, $3, NULL); }
+else_stmt		:	ELSE LB stmt_list RB RUN STMTEND { $$=MakeOPTree(ELSE, $3, NULL); }
 		;
 
 
 
-condition      	 :    expr EQ expr { $$=MakeOPTree(EQ, $1, $3);}
-		|    expr LT expr { $$=MakeOPTree(LT, $1, $3);}
-		|    expr GT expr { $$=MakeOPTree(GT, $1, $3);}
-		|    expr LE expr { $$=MakeOPTree(LE, $1, $3);}
-		|    expr GE expr { $$=MakeOPTree(GE, $1, $3);}
-		|    expr NE expr { $$=MakeOPTree(NE, $1, $3);}
+condition      	 :    expr IS expr WA EQ { $$=MakeOPTree(EQ, $1, $3);}
+		|     expr IS expr THEN LT { $$=MakeOPTree(LT, $1, $3);}
+		|     expr IS expr THEN GT { $$=MakeOPTree(GT, $1, $3);}
+		|     expr IS expr THEN LE { $$=MakeOPTree(LE, $1, $3);}
+		|     expr IS expr THEN GE { $$=MakeOPTree(GE, $1, $3);}
+		|     expr IS expr WA NE { $$=MakeOPTree(NE, $1, $3);}
 		;
 
 	
@@ -495,6 +500,20 @@ void prtcode(int token, int val)
 		fprintf(fp, "RVALUE %s\n", symtbl[val]);
 		fprintf(fp, ":=\n");
 		fprintf(fp, "LVALUE %s\n", symtbl[val]);
+		break;
+	case ID6:
+		fprintf(fp, "LVALUE %s\n", symtbl[val]);
+		fprintf(fp, "RVALUE %s\n", symtbl[val]);
+		fprintf(fp, "PUSH 1\n");
+		fprintf(fp, "+\n");
+		fprintf(fp, ":=\n");
+		break;
+	case ID7:
+		fprintf(fp, "LVALUE %s\n", symtbl[val]);
+		fprintf(fp, "RVALUE %s\n", symtbl[val]);
+		fprintf(fp, "PUSH 1");
+		fprintf(fp, "-\n");
+		fprintf(fp, ":=\n");
 		break;
 	case NUM:
 		fprintf(fp, "PUSH %d\n", val);
