@@ -107,7 +107,7 @@ stmt		: 	ID ASSGN expr THIS SAVE STMTEND	{ $1->token = ID2; $$=MakeOPTree(ASSGN,
 		|	swap_h SWAP 	{$$=MakeOPTree(SWAPE, $1, NULL); }	
 		|	if_stmt else_stmt { $$=MakeOPTree(IF_ELSE, $1, $2); }
 		| 	if_stmt
-		|	inc_dec_stmt STMTEND
+		|	inc_dec_stmt
 		|	call_back
 		|	switch_stmt default_stmt	{ $$=MakeOPTree(SWITCH, $1, $2); }
 		;
@@ -137,7 +137,7 @@ case_l		:	{$$=MakeNode(CASEL,CASEL);}
 
 swap_h		:	swap_m ID 	{$2->token=ID5; $$=MakeOPTree(SWAPH, $1, $2);}
 
-swap_m		:	ID WA swap_s	{$1->token=ID5; $$=MakeOPTree(SWAPM, $3, $1);}
+swap_m		:	ID WA swap_s	{$1->token=ID5; $$=MakeOPTree(SWAPM, $3, $2);}
 		;
 
 swap_s		:	{$$=MakeNode(SWAPS,SWAPS);}
@@ -674,13 +674,13 @@ void prtcode(int token, int val)
 		fprintf(fp, "LABEL FLOOP%d\n", ++for_cnt);
 		break;
 	case FUNCEND:
-		fprintf(fp, "GOTO FLABEL%d\n", ++f_cnt);
+		fprintf(fp, "GOTO FUNCLABEL%d\n", ++f_cnt);
 		fprintf(fp, "LABEL CALLBACK%d\n", cb_cnt);
 		cb_cnt--;
 		break;
 	case FUNC:
 		fprintf(fp, "GOTO FUNCOUT%d\n", ++fe_cnt);
-		fprintf(fp, "LABEL FLABEL%d\n", f_cnt--);
+		fprintf(fp, "LABEL FUNCLABEL%d\n", f_cnt--);
 		f_cnt--;
 		break;
 	case CALLBACK:
@@ -695,6 +695,7 @@ void prtcode(int token, int val)
 	case FOR:
 		fprintf(fp, "GOTO FLOOP%d\n", for_cnt - inner_f_cnt);
 		fprintf(fp, "LABEL FLABEL%d\n", f_c_cnt - inner_f_cnt);
+		cnt--;
 		break;
 	case TEX:
 		fprintf(fp, ":=\n");

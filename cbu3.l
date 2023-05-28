@@ -70,6 +70,7 @@ id	{letter}({letter}|{digit})*
 "/="	  {return(DA);}
 일단	{return(FOR);}
 "입력 받아주세요"	{return(SCANF);}
+:	{return(COLON);}
 "++"	{return(INC);}
 "--"	{return(DEC);}
 호출	{return(CALL);}
