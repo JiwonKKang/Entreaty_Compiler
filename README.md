@@ -6,3 +6,9 @@ lex와 yacc을 이용해 만든 컴파일러 입니다.
 <h1>Etreaty_Language 문법</h1><br>
 <img src="https://github.com/JiwonKKang/Entreaty_Compiler/assets/128073698/942089a8-73f2-4394-86cc-d70e7e8ab6ad" width="500" height="400"/>
 <img src="https://github.com/JiwonKKang/Entreaty_Compiler/assets/128073698/1a847a13-4c8f-4f0c-91e1-f0ae3f6be546" width="500" height="400"/>
+
+
+## 프로젝트 점수
+
+<img src="https://github.com/JiwonKKang/Entreaty_Compiler/assets/128073698/b8ac5ca3-520e-4dc4-be05-b91813b51f2e" 
+  style="border-radius: 20px;">
